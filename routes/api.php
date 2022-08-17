@@ -1,4 +1,6 @@
 <?php
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 function is_kra_pin(string $pin) {
@@ -31,5 +33,12 @@ Route::get("/is_kra/{pin}", function (string $pin) {
 	$pattern = "/^[A-Z]\d{9}[A-Z]$/i";
 	return response()->json([
 		"match" => preg_match($pattern, $pin) == 1
+	]);
+});
+
+Route::get("/db/invalid", function() {
+	$with_invalid_kra_pins = DB::select("SELECT * FROM employees WHERE kra_pin NOT REGEXP '^[A-Z][0-9]{9}[A-Z]$'");
+	return response()->json([
+		"users_with_invalid_kra_pins" => $with_invalid_kra_pins
 	]);
 });
